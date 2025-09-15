@@ -1,11 +1,4 @@
 (function(window){
-  // Initialize SMART OAuth2 client
-  FHIR.oauth2.authorize({
-    clientId: "f3521826-45d2-4799-98d2-da13dcdea09a",
-    scope: "launch/patient openid fhirUser patient/*.read",
-    redirectUri: "https://asunkad99.github.io/smart-on-fhir-tutorial/example-smart-app/",
-    iss: "https://fhir-open.sandboxcerner.com/r4/5458f1b3-ee08-4111-b6a9-d01089c119c1"
-  });
 
   window.extractData = function() {
     var ret = $.Deferred();
@@ -57,18 +50,10 @@
           p.lname = lname;
           p.height = getQuantityValueAndUnit(height[0]);
 
-          if (typeof systolicbp != 'undefined')  {
-            p.systolicbp = systolicbp;
-          }
-
-          if (typeof diastolicbp != 'undefined') {
-            p.diastolicbp = diastolicbp;
-          }
-
+          if (typeof systolicbp != 'undefined')  { p.systolicbp = systolicbp; }
+          if (typeof diastolicbp != 'undefined') { p.diastolicbp = diastolicbp; }
           p.hdl = getQuantityValueAndUnit(hdl[0]);
           p.ldl = getQuantityValueAndUnit(ldl[0]);
-
-          console.log("Patient data:", p); // Debug log
 
           ret.resolve(p);
         });
@@ -82,17 +67,7 @@
   };
 
   function defaultPatient(){
-    return {
-      fname: {value: ''},
-      lname: {value: ''},
-      gender: {value: ''},
-      birthdate: {value: ''},
-      height: {value: ''},
-      systolicbp: {value: ''},
-      diastolicbp: {value: ''},
-      ldl: {value: ''},
-      hdl: {value: ''},
-    };
+    return { fname:'', lname:'', gender:'', birthdate:'', height:'', systolicbp:'', diastolicbp:'', ldl:'', hdl:'' };
   }
 
   function getBloodPressureValue(BPObservations, typeOfPressure) {
@@ -108,19 +83,13 @@
         formattedBPObservations.push(observation);
       }
     });
-
     return getQuantityValueAndUnit(formattedBPObservations[0]);
   }
 
   function getQuantityValueAndUnit(ob) {
-    if (typeof ob != 'undefined' &&
-        typeof ob.valueQuantity != 'undefined' &&
-        typeof ob.valueQuantity.value != 'undefined' &&
-        typeof ob.valueQuantity.unit != 'undefined') {
-          return ob.valueQuantity.value + ' ' + ob.valueQuantity.unit;
-    } else {
-      return undefined;
-    }
+    if (ob && ob.valueQuantity && ob.valueQuantity.value != undefined && ob.valueQuantity.unit)
+      return ob.valueQuantity.value + ' ' + ob.valueQuantity.unit;
+    return undefined;
   }
 
   window.drawVisualization = function(p) {
