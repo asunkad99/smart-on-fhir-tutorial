@@ -1,4 +1,12 @@
 (function(window){
+  // Initialize SMART OAuth2 client
+  FHIR.oauth2.authorize({
+    clientId: "f3521826-45d2-4799-98d2-da13dcdea09a",
+    scope: "launch/patient openid fhirUser patient/*.read",
+    redirectUri: "https://asunkad99.github.io/smart-on-fhir-tutorial/example-smart-app/",
+    iss: "https://fhir-open.sandboxcerner.com/r4/5458f1b3-ee08-4111-b6a9-d01089c119c1"
+  });
+
   window.extractData = function() {
     var ret = $.Deferred();
 
@@ -12,15 +20,15 @@
         var patient = smart.patient;
         var pt = patient.read();
         var obv = smart.patient.api.fetchAll({
-                    type: 'Observation',
-                    query: {
-                      code: {
-                        $or: ['http://loinc.org|8302-2', 'http://loinc.org|8462-4',
-                              'http://loinc.org|8480-6', 'http://loinc.org|2085-9',
-                              'http://loinc.org|2089-1', 'http://loinc.org|55284-4']
-                      }
-                    }
-                  });
+          type: 'Observation',
+          query: {
+            code: {
+              $or: ['http://loinc.org|8302-2', 'http://loinc.org|8462-4',
+                    'http://loinc.org|8480-6', 'http://loinc.org|2085-9',
+                    'http://loinc.org|2089-1', 'http://loinc.org|55284-4']
+            }
+          }
+        });
 
         $.when(pt, obv).fail(onError);
 
@@ -60,6 +68,8 @@
           p.hdl = getQuantityValueAndUnit(hdl[0]);
           p.ldl = getQuantityValueAndUnit(ldl[0]);
 
+          console.log("Patient data:", p); // Debug log
+
           ret.resolve(p);
         });
       } else {
@@ -69,7 +79,6 @@
 
     FHIR.oauth2.ready(onReady, onError);
     return ret.promise();
-
   };
 
   function defaultPatient(){
